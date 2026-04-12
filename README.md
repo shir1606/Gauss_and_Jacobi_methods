@@ -1,99 +1,237 @@
-# Iterative Methods for Solving Linear Systems (Jacobi & Gauss-Seidel)
+# Solving Linear Systems Using Iterative Methods
 
-## Project Description
-
-This project implements numerical methods for solving systems of linear equations of the form:
-
-**A·x = b**
-
-where:
-- `A` is a square matrix (n x n)
-- `b` is a column vector (right-hand side)
-- `x` is the solution vector
-
-The project includes implementation of two iterative methods:
-1. Jacobi Method
-2. Gauss-Seidel Method
-
-In addition, the project includes preprocessing steps such as pivoting and checking diagonal dominance to ensure convergence.
-
-
-
-## Implemented Features
-
-### 1. System Solver Function
-A main function that receives:
-a. A square matrix `A`
-b. A solution vector `b`
-
-and solves the system using iterative methods.
-
-
-### 2. Pivoting (Row Rearrangement)
-Before applying the iterative methods, the matrix is processed using partial pivoting.
-
-For each column `i`:
-- The algorithm searches for the maximum absolute value in column `i`, starting from row `i` downward.
-- Rows are swapped to place the maximum element on the diagonal position.
-
-Important rule:
-Only rows below (or equal to) the current index are considered for swapping.
-
-
-### 3. Diagonal Dominance Check
-After pivoting, the program verifies whether the matrix is diagonally dominant.
-
-For each row `i`:
-
-\[
-|A[i][i]| \ge \sum_{j \ne i} |A[i][j]|
-\]
-
-If this condition holds for all rows, the matrix is considered diagonally dominant, which increases the likelihood of convergence.
+### Jacobi & Gauss-Seidel | Python Implementation
 
 ---
 
-### 4. Initialization of Solution Vectors
+## 👩‍💻 Project Overview
 
-- `Xr`: initial approximation vector, initialized to zeros
-- `Xr+1`: updated solution vector computed in each iteration
+This project presents a full implementation of two classical **iterative numerical methods** for solving systems of linear equations:
 
-Stopping criterion:
-- ε (epsilon) = 0.001
+* **Jacobi Method**
+* **Gauss-Seidel Method**
 
+The implementation follows the assignment requirements and emphasizes:
 
-### 5. Iterative Process
+* Correct mathematical logic
+* Code modularity and reusability
+* Handling of edge cases (non-diagonally dominant matrices)
+* Clear and informative output
 
-The algorithm runs up to **1000 iterations** or until convergence.
+---
 
-In each iteration:
-1. Compute the next approximation vector (`Xr+1`) using either:
-   - Jacobi method OR
-   - Gauss-Seidel method (implemented in separate functions)
-2. Print the current vector `Xr`
-3. Update:
-   - `Xr to Xr+1`
-4. Check stopping condition:
-   - If `|Xr+1 - Xr| < ε`, stop
-   - Otherwise continue
+## 🎯 Assignment Requirements – Implementation Summary
 
+Implement two functions:
 
-### 6. Stopping Condition & Output
+* `jacobi(...)`
+* `gauss_seidel(...)`
 
-The program stops when:
-- The solution converges (difference < epsilon), OR
-- The number of iterations reaches 1000
+Each method:
+
+* Receives matrix **A** and vector **b**
+* Checks for **diagonal dominance**
+* Performs **row pivoting** if needed
+* Attempts convergence even if dominance is not achieved
+
+Output includes:
+
+* Iteration-by-iteration results
+* Convergence status
+* Number of iterations
+
+Stopping condition:
+
+```python
+TOL = 1e-5
+```
+
+No user input required – system defined in code
+
+---
+
+## Mathematical Background
+
+We solve a linear system:
+
+[
+Ax = b
+]
+
+Where:
+
+* ( A ) – coefficient matrix
+* ( x ) – unknown vector
+* ( b ) – constants vector
+
+---
+
+### Jacobi Method
+
+Each iteration computes:
+
+[
+x_i^{(k+1)} = \frac{1}{a_{ii}} \left( b_i - \sum_{j \ne i} a_{ij} x_j^{(k)} \right)
+]
+
+* Uses **only previous iteration values**
+* Always computes a completely new vector
+
+---
+
+### Gauss-Seidel Method
+
+Each iteration computes:
+
+[
+x_i^{(k+1)} = \frac{1}{a_{ii}} \left( b_i - \sum_{j < i} a_{ij} x_j^{(k+1)} - \sum_{j > i} a_{ij} x_j^{(k)} \right)
+]
+
+* Uses **updated values immediately**
+* Typically converges faster than Jacobi
+
+---
+
+##  System Definition
+
+The system is hardcoded as required:
+
+```python
+matrixA = [[4,2,0],
+           [2,10,4],
+           [0,4,5]]
+
+vectorB = [[2],
+           [6],
+           [5]]
+```
+
+*(The implementation also supports larger matrices as shown in the code.)*
+
+---
+
+## 🔄 Algorithm Flow
+
+1. **Matrix Initialization**
+2. **Pivoting Attempt**
+
+   * Reorders rows to improve diagonal dominance
+3. **Diagonal Dominance Check**
+4. **Iterative Solution**
+
+   * Jacobi / Gauss-Seidel
+5. **Convergence Check**
+6. **Result Output**
+
+---
+
+## 🔍 Diagonal Dominance
+
+A matrix is diagonally dominant if:
+
+[
+|a_{ii}| > \sum_{j \ne i} |a_{ij}|
+]
+
+### Behavior:
+
+*  If satisfied → algorithm expected to converge
+*  If not → algorithm still runs
+
+  * If converges → prints:
+
+    > "Despite no diagonal dominance, the system converged"
+  * If not → prints:
+
+    > "The system did not converge"
+
+---
+
+## 🔁 Iterative Solver Design
+
+The function `iterative_solver(...)`:
+
+* Handles both methods dynamically
+* Avoids code duplication
+* Uses **NumPy norm** for convergence check:
+
+```python
+np.linalg.norm(X_new - X_old) < eps
+```
+
+---
+
+## 📊 Output Format
+
+For each iteration:
+
+```
+Iteration k: X = [...]
+```
 
 Final output includes:
-- Final solution vector
-- Whether the matrix is diagonally dominant
-- Whether the method converged successfully
 
-  
-## Project Structure
-├── main.cpp                # Main program flow
-├── jacobi.cpp / .h         # Jacobi implementation
-├── gauss_seidel.cpp / .h   # Gauss-Seidel implementation
-├── pivoting.cpp / .h       # Pivoting logic
-├── utils.cpp / .h          # Helper functions (norms, checks)
-└── README.md               # Project documentation
+* Solution vector
+* Number of iterations
+* Convergence status
+
+---
+
+##  Code Structure
+
+```
+├── task()                      # Main program
+├── iterative_solver()          # Controls iteration process
+├── jacobi()                    # Jacobi step
+├── gauss_seidel()              # Gauss-Seidel step
+├── pivoting()                  # Row reordering
+├── findmaxrow()                # Helper for pivoting
+├── changeroworder()            # Swap rows
+├── diagonally_dominant()       # Check dominance
+```
+
+---
+
+## ⚙️Installation & Setup
+
+Get the project up and running in under a minute:
+
+1. Clone the repository
+git clone <your-repo-link>
+cd <project-folder>
+2. Install dependencies
+pip install numpy
+3. Run the project
+python main.py
+```
+
+---
+
+## 💡 Design Decisions
+
+* Separation between iteration logic and method implementation
+* Reuse of helper functions to prevent redundancy
+* Use of NumPy for numerical stability
+* Support for non-ideal matrices (robustness)
+
+---
+
+## ⚠️ Limitations
+
+* Convergence is not guaranteed for all matrices
+* Pivoting improves but does not ensure diagonal dominance
+* No dynamic user input (as required)
+
+---
+
+## Conclusion
+
+This project demonstrates:
+
+* Strong understanding of **numerical linear algebra**
+* Correct implementation of **iterative solvers**
+* Ability to handle **real-world edge cases**
+* Writing **clean, modular, and maintainable Python code**
+
+---
+
