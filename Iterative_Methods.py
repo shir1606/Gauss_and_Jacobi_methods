@@ -1,6 +1,15 @@
 TOL = 1e-5
-MAX_ITER = 100
+MAX_ITER = 1000
 
+
+MaT =[[60,62,77,76,26],[11,51,1,59,95],[20,44,12,34,97],[3,65,4,13,48],[3,31,83,5,36]]
+Size=5
+def task():
+    pivoting(MaT,Size)
+    for i in range(Size):
+        for j in range(Size):
+            print(MaT[i][j])
+        print("\n")
 
 # =====================================
 
@@ -79,3 +88,35 @@ def gauss_seidel(A, b):
 
     print("\nDid not converge")
     return x
+
+
+def pivoting(mat,size):
+    #the function ordering by max item under the diagonal the matrix
+    for col in range(size):#for each level in diagonal checks the max row and ordering it
+        max=findmaxrow(mat,size,col)
+        if (col!= max):
+            changeroworder(mat, size, col, max)
+
+
+
+
+def findmaxrow(mat,size,col):
+    max=mat[col][col]#starts with the item in diagonal
+    maxrow=col#remember the first row of iteration
+    for row in range(col+1,size):#for each item under diagonal
+        if abs(mat[row][col])>abs(max):#if absolute item under diagonal is bigger then max then update
+            max = mat[row][col]
+            maxrow = row
+    return maxrow
+
+
+def changeroworder(mat, size, row, maxrow):
+    #swaps the items in maxrow to the row currently working with
+
+    for i in range(row , size):
+        temp = mat[i][row]
+        mat[i][row] = mat[maxrow][row]
+        mat[maxrow][row] = temp
+
+
+task()
