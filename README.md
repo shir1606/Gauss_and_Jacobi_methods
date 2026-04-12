@@ -203,35 +203,32 @@ cd <project-folder>
 pip install numpy
 3. Run the project
 python main.py
-```
+
+---
+## 💡 Design Highlights
+
+* Clean separation between logic layers
+* Reusable helper functions
+* Robust handling of non-ideal matrices
+* Efficient convergence checking using NumPy
 
 ---
 
-## 💡 Design Decisions
-
-* Separation between iteration logic and method implementation
-* Reuse of helper functions to prevent redundancy
-* Use of NumPy for numerical stability
-* Support for non-ideal matrices (robustness)
-
----
-
-## ⚠️ Limitations
+## ⚠️ Notes
 
 * Convergence is not guaranteed for all matrices
-* Pivoting improves but does not ensure diagonal dominance
-* No dynamic user input (as required)
+* Pivoting improves numerical behavior but does not ensure success
+* Implementation follows assignment constraints (no user input)
 
 ---
 
-## Conclusion
+## 🏁 Conclusion
 
-This project demonstrates:
+This project reflects:
 
-* Strong understanding of **numerical linear algebra**
-* Correct implementation of **iterative solvers**
-* Ability to handle **real-world edge cases**
-* Writing **clean, modular, and maintainable Python code**
+* Strong understanding of numerical methods
+* Practical implementation of iterative algorithms
+* Writing clear, maintainable, and well-structured code
 
 ---
 
