@@ -11,6 +11,7 @@ def task():
             print(MaT[i][j])
         print("\n")
 
+
 # =====================================
 
 
@@ -96,6 +97,13 @@ def pivoting(mat,size):
         max=findmaxrow(mat,size,col)
         if (col!= max):
             changeroworder(mat, size, col, max)
+
+#4
+def iter():
+    XR=[0]*Size
+    epsilon=0.001
+    XRnew=XR
+    XRnew[0]+=1
 
 
 
