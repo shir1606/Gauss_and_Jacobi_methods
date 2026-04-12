@@ -129,7 +129,7 @@ def gauss_seidel(A, b, X):
 
 def iterative_solver(method, A, b, X0, has_dominant, eps=0.001, max_iter=1000):
     XR = X0.copy()
-        for r in range(max_iter):
+    for r in range(max_iter):
         print(f"Iteration {r}: X = {XR}")
 
         if method == 'jacobi':
@@ -172,5 +172,15 @@ def changeroworder(mat, size, row, maxrow):
         mat[i][row] = mat[maxrow][row]
         mat[maxrow][row] = temp
 
+
+def diagonally_dominant(matrix):
+    n = len(matrix)
+    for i in range(n):
+        diagonal_val = abs(matrix[i][i])
+        off_diagonal_sum = sum(abs(matrix[i][j]) for j in range(n) if i != j)
+
+        if diagonal_val <= off_diagonal_sum:
+            return False
+    return True
 
 task()
