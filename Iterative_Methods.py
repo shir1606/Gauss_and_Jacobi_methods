@@ -13,12 +13,11 @@ def task():
     pivoting(MaT,Size)#calling for pivoting the matrix
 
     #calling for iteration
-    method='jacobi'
-    X0=[0]*Size
-    iterative_solver(method, MaT, b, X0, diagonally_dominant(MaT))
     method='gauss_seidel'
-    iterative_solver(method, MaT, b, X0, diagonally_dominant(MaT))
-    #calling for functiontask 6
+    X0=[1,2,6,4,5]
+    iterative_solver( MaT, b, X0,method)
+
+
 
 
 # =====================================
@@ -98,47 +97,78 @@ def pivoting(mat,size):
             changeroworder(mat, size, col, max)
 
 #task 5
-def jacobi(A, b, X):
-    n = len(X)
-    X_new = np.zeros(n)
+
+def jacobi_method(A, b, X):
+    """
+    Computes the next approximation vector (Xr+1) using the Jacobi method.
+    """
+    n = len(A)
+    X_next = np.zeros_like(X)
+
     for i in range(n):
-        sum_ax = sum(A[i][j] * X[j] for j in range(n) if j != i)
-        X_new[i] = (b[i] - sum_ax) / A[i][i]
-    return X_new
+        # Sum of A[i][j] * X[j] for all j != i
+        s = sum(A[i][j] * X[j] for j in range(n) if j != i)
+        X_next[i] = (b[i] - s) / A[i][i]
 
-def gauss_seidel(A, b, X):
-    n = len(X)
-    X_new = X.copy()
+    return X_next
+
+
+def gauss_seidel_method(A, b, X):
+    """
+    Computes the next approximation vector (Xr+1) using the Gauss-Seidel method.
+    """
+    n = len(A)
+    # Copy X so we can update it in-place using the newest values
+    X_next = np.copy(X)
+
     for i in range(n):
-        sum_ax = sum(A[i][j] * X_new[j] for j in range(i)) + sum(A[i][j] * X[j] for j in range(i+1, n))
-        X_new[i] = (b[i] - sum_ax) / A[i][i]
-    return X_new
+        # Sum of A[i][j] * X_next[j] for all j != i
+        # Notice it uses the newly updated values in X_next immediately
+        s = sum(A[i][j] * X_next[j] for j in range(n) if j != i)
+        X_next[i] = (b[i] - s) / A[i][i]
 
-def iterative_solver(method, A, b, X0, has_dominant, eps=0.001, max_iter=1000):
-    XR=[0]*Size
-    XR[0]+=1
-    for r in range(max_iter):
-        print(f"Iteration {r}: X = {XR}")
+    return X_next
 
+
+def iterative_solver(A, b, X0, method='jacobi'):
+    """
+    Main algorithm loop to find the solution to Ax = b.
+    """
+    epsilon = 1e-6
+    max_iter = 100
+    # Ensure inputs are float arrays to prevent integer division issues
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    Xr = np.array(X0, dtype=float)
+
+    print(f"--- Starting {method.upper()} Method ---")
+
+    for iteration in range(max_iter):
+        # Print the current vector Xr
+        print(f"Iteration {iteration:3}: Xr = {Xr}")
+
+        # Compute the next approximation vector (Xr+1)
         if method == 'jacobi':
-            XRnew = jacobi(A, b, XR)
+            Xr_next = jacobi_method(A, b, Xr)
         elif method == 'gauss_seidel':
-            XRnew = gauss_seidel(A, b, XR)
-        if np.linalg.norm(XRnew - XR) < eps:
-            break
-        XR = XRnew
-    print("\n--- Final Result ---")
-    if np.linalg.norm(XRnew - XR) < eps:
-        if has_dominant:
-            print("Matrix is diagonally dominant and the system converged.")
+            Xr_next = gauss_seidel_method(A, b, Xr)
         else:
-            print("Matrix is NOT diagonally dominant, but the system converged.")
-        print("Solution:", XRnew)
-        print("Iterations:", r + 1)
-    else:
-        print("The system did NOT converge after", max_iter, "iterations.")
-        print("Last approximation:", XR)
-    return XR
+            raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
+
+        # Check stopping condition: |Xr+1 - Xr| < ε
+        # Using the infinity norm (maximum absolute difference)
+        diff = np.max(np.abs(Xr_next - Xr))
+
+        if diff < epsilon:
+            print(f"\nConvergence achieved after {iteration + 1} iterations.")
+            print(f"Final Solution: X = {Xr_next}")
+            return Xr_next
+
+        # Update: Xr to Xr+1
+        Xr = Xr_next
+
+    print("\nWarning: Maximum iterations (1000) reached without convergence.")
+    return Xr
 
 
 
@@ -172,3 +202,4 @@ def diagonally_dominant(matrix):
     return True
 
 task()
+
