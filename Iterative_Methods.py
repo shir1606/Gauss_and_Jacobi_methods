@@ -127,22 +127,29 @@ def gauss_seidel(A, b, X):
         X_new[i] = (b[i] - sum_ax) / A[i][i]
     return X_new
 
-def iterative_solver(method, A, b, X0, eps=0.001, max_iter=1000):
+def iterative_solver(method, A, b, X0, has_dominant, eps=0.001, max_iter=1000):
     XR = X0.copy()
-    for r in range(max_iter):
+        for r in range(max_iter):
         print(f"Iteration {r}: X = {XR}")
+
         if method == 'jacobi':
             XRnew = jacobi(A, b, XR)
         elif method == 'gauss_seidel':
             XRnew = gauss_seidel(A, b, XR)
-        else:
-            raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
-        # Check convergence
         if np.linalg.norm(XRnew - XR) < eps:
-            print(f"Converged at iteration {r+1}: X = {XRnew}")
-            return XRnew
+            break
         XR = XRnew
-    print(f"Did not converge after {max_iter} iterations. Final X = {XR}")
+    print("\n--- Final Result ---")
+    if np.linalg.norm(XRnew - XR) < eps:
+        if has_dominant:
+            print("Matrix is diagonally dominant and the system converged.")
+        else:
+            print("Matrix is NOT diagonally dominant, but the system converged.")
+        print("Solution:", XRnew)
+        print("Iterations:", r + 1)
+    else:
+        print("The system did NOT converge after", max_iter, "iterations.")
+        print("Last approximation:", XR)
     return XR
 
 
