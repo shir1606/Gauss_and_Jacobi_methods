@@ -16,20 +16,20 @@ def gauss_seidel(A, b, X):
         X_new[i] = (b[i] - sum_ax) / A[i][i]
     return X_new
 
-def iterative_solve(method, A, b, X0, eps=1e-6, max_iter=1000):
-    X = X0.copy()
+def iterative_solver(method, A, b, X0, eps=0.001, max_iter=1000):
+    XR = X0.copy()
     for r in range(max_iter):
-        print(f"Iteration {r}: X = {X}")
+        print(f"Iteration {r}: X = {XR}")
         if method == 'jacobi':
-            X_next = jacobi(A, b, X)
+            XRnew = jacobi(A, b, XR)
         elif method == 'gauss_seidel':
-            X_next = gauss_seidel(A, b, X)
+            XRnew = gauss_seidel(A, b, XR)
         else:
             raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
         # Check convergence
-        if np.linalg.norm(X_next - X) < eps:
-            print(f"Converged at iteration {r+1}: X = {X_next}")
-            return X_next
-        X = X_next
-    print(f"Did not converge after {max_iter} iterations. Final X = {X}")
-    return X
+        if np.linalg.norm(XRnew - XR) < eps:
+            print(f"Converged at iteration {r+1}: X = {XRnew}")
+            return XRnew
+        XR = XRnew
+    print(f"Did not converge after {max_iter} iterations. Final X = {XR}")
+    return XR
