@@ -13,11 +13,12 @@ def task():
     pivoting(MaT,Size)#calling for pivoting the matrix
 
     #calling for iteration
+    method='jacobi'
+    X0=[1,2,3,4,5]
+    iterative_solver(MaT, b, X0,method )
     method='gauss_seidel'
-    X0=[1,2,6,4,5]
-    iterative_solver( MaT, b, X0,method)
-
-
+    iterative_solver( MaT, b, X0, method)
+    #calling for functiontask 6
 
 
 # =====================================
@@ -26,18 +27,24 @@ def task():
 # Jacobi Method
 def jacobi(A, b):
     n = len(A)
+
     x_old = [0.0] * n
     x_new = [0.0] * n
 
     for iteration in range(MAX_ITER):
+
         for i in range(n):
             sum_not_i = 0.0
+
             for j in range(n):
                 if j != i:
                     sum_not_i += A[i][j] * x_old[j]
+
             x_new[i] = (b[i][0] - sum_not_i) / A[i][i]
+
         print("Iteration", iteration + 1, ":", x_new)
 
+        # תנאי עצירה
         max_diff = 0.0
         for i in range(n):
             diff = abs(x_new[i] - x_old[i])
@@ -49,6 +56,7 @@ def jacobi(A, b):
             return x_new
 
         x_old = x_new.copy()
+
     print("\nDid not converge")
     return x_old
 
@@ -59,19 +67,21 @@ def jacobi(A, b):
 # Gauss-Seidel Method
 def gauss_seidel(A, b):
     n = len(A)
+
     x = [0.0] * n
 
     for iteration in range(MAX_ITER):
+
         x_old = x.copy()
+
         for i in range(n):
-            sum_before = 0.0
-            sum_after = 0.0
 
             for j in range(i):
                 sum_before += A[i][j] * x[j]
 
             for j in range(i + 1, n):
                 sum_after += A[i][j] * x_old[j]
+
             x[i] = (b[i][0] - sum_before - sum_after) / A[i][i]
 
         print("Iteration", iteration + 1, ":", x)
@@ -85,6 +95,7 @@ def gauss_seidel(A, b):
         if max_diff < TOL:
             print("\nConverged after", iteration + 1, "iterations")
             return x
+
     print("\nDid not converge")
     return x
 
@@ -130,12 +141,12 @@ def gauss_seidel_method(A, b, X):
     return X_next
 
 
-def iterative_solver(A, b, X0, method='jacobi'):
+def iterative_solver(A, b, X0,  method='jacobi'):
     """
     Main algorithm loop to find the solution to Ax = b.
     """
+    max_iter = 1000
     epsilon = 1e-6
-    max_iter = 100
     # Ensure inputs are float arrays to prevent integer division issues
     A = np.array(A, dtype=float)
     b = np.array(b, dtype=float)
@@ -202,4 +213,3 @@ def diagonally_dominant(matrix):
     return True
 
 task()
-
