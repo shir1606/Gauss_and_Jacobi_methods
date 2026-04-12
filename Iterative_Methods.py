@@ -98,7 +98,7 @@ def pivoting(mat,size):
         if (col!= max):
             changeroworder(mat, size, col, max)
 
-#4
+#4 task
 def iter():
     XR=[0]*Size
     epsilon=0.001
