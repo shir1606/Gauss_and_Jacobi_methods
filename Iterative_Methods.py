@@ -4,12 +4,16 @@ MAX_ITER = 1000
 
 MaT =[[60,62,77,76,26],[11,51,1,59,95],[20,44,12,34,97],[3,65,4,13,48],[3,31,83,5,36]]
 Size=5
+#Main
 def task():
-    pivoting(MaT,Size)
+    pivoting(MaT,Size)#calling for pivoting the matrix
     for i in range(Size):
         for j in range(Size):
             print(MaT[i][j])
         print("\n")
+    #calling for iteration
+
+    #calling for functiontask 6
 
 
 # =====================================
