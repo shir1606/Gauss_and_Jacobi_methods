@@ -1,3 +1,5 @@
+from xml.etree.ElementPath import xpath_tokenizer_re
+
 import numpy as np
 TOL = 1e-5
 MAX_ITER = 1000
@@ -5,15 +7,17 @@ MAX_ITER = 1000
 
 MaT =[[60,62,77,76,26],[11,51,1,59,95],[20,44,12,34,97],[3,65,4,13,48],[3,31,83,5,36]]
 Size=5
+b=[1,2,3,4,5]
 #Main
 def task():
     pivoting(MaT,Size)#calling for pivoting the matrix
-    for i in range(Size):
-        for j in range(Size):
-            print(MaT[i][j])
-        print("\n")
-    #calling for iteration
 
+    #calling for iteration
+    method='jacobi'
+    X0=[0]*Size
+    iterative_solver(method, MaT, b, X0, diagonally_dominant(MaT))
+    method='gauss_seidel'
+    iterative_solver(method, MaT, b, X0, diagonally_dominant(MaT))
     #calling for functiontask 6
 
 
@@ -103,13 +107,6 @@ def pivoting(mat,size):
         if (col!= max):
             changeroworder(mat, size, col, max)
 
-#4 task
-def iter():
-    XR=[0]*Size
-    epsilon=0.001
-    XRnew=XR
-    XRnew[0]+=1
-
 #task 5
 def jacobi(A, b, X):
     n = len(X)
@@ -128,7 +125,8 @@ def gauss_seidel(A, b, X):
     return X_new
 
 def iterative_solver(method, A, b, X0, has_dominant, eps=0.001, max_iter=1000):
-    XR = X0.copy()
+    XR=[0]*Size
+    XR[0]+=1
     for r in range(max_iter):
         print(f"Iteration {r}: X = {XR}")
 
