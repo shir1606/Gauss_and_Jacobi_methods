@@ -134,9 +134,20 @@ def diagonally_dominant(matrix):
 # =====================================
 
 def iterative_solver(A, b, X0,  method):
+
+    # Compute the next approximation vector (Xr+1)
+    if method == 'jacobi':
+        Xr_next = jacobi(A, b)
+    elif method == 'gauss_seidel':
+        Xr_next = gauss_seidel(A, b)
+    else:
+        raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
+
     """
+    maybe delete ???
+    
     Main algorithm loop to find the solution to Ax = b.
-    """
+    
     max_iter = 1000
 
     # Ensure inputs are float arrays to prevent integer division issues
@@ -146,13 +157,7 @@ def iterative_solver(A, b, X0,  method):
 
     print(f"--- Starting {method.upper()} Method ---")
 
-    # Compute the next approximation vector (Xr+1)
-    if method == 'jacobi':
-        Xr_next = jacobi(A, b)
-    elif method == 'gauss_seidel':
-        Xr_next = gauss_seidel(A, b)
-    else:
-        raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
+
 
         # Check stopping condition: |Xr+1 - Xr| < ε
         # Using the infinity norm (maximum absolute difference)
@@ -175,6 +180,6 @@ def iterative_solver(A, b, X0,  method):
 
     return Xr
 
-
+"""
 # =====================================
 task()
