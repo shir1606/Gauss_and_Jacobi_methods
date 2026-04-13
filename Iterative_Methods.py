@@ -18,11 +18,9 @@ def task():
     iterative_solver(MaT, b, X0,method )
     method='gauss_seidel'
     iterative_solver( MaT, b, X0, method)
-    #calling for functiontask 6
 
 
 # =====================================
-
 
 # Jacobi Method
 def jacobi(A, b):
@@ -60,9 +58,7 @@ def jacobi(A, b):
     print("\nDid not converge")
     return x_old
 
-
 # =====================================
-
 
 # Gauss-Seidel Method
 def gauss_seidel(A, b):
@@ -99,6 +95,7 @@ def gauss_seidel(A, b):
     print("\nDid not converge")
     return x
 
+# =====================================
 
 def pivoting(mat,size):
     #the function ordering by max item under the diagonal the matrix
@@ -107,39 +104,37 @@ def pivoting(mat,size):
         if (col!= max):
             changeroworder(mat, size, col, max)
 
-#task 5
+def findmaxrow(mat,size,col):
+    max=mat[col][col]#starts with the item in diagonal
+    maxrow=col#remember the first row of iteration
+    for row in range(col+1,size):#for each item under diagonal
+        if abs(mat[row][col])>abs(max):#if absolute item under diagonal is bigger then max then update
+            max = mat[row][col]
+            maxrow = row
+    return maxrow
 
-def jacobi_method(A, b, X):
-    """
-    Computes the next approximation vector (Xr+1) using the Jacobi method.
-    """
-    n = len(A)
-    X_next = np.zeros_like(X)
+def changeroworder(mat, size, row, maxrow):
+    #swaps the items in maxrow to the row currently working with
 
+    for i in range(row , size):
+        temp = mat[i][row]
+        mat[i][row] = mat[maxrow][row]
+        mat[maxrow][row] = temp
+
+# =====================================
+
+def diagonally_dominant(matrix):
+    #the function checks if the diagonal value is bigger then the other objects on its row
+    n = len(matrix)
     for i in range(n):
-        # Sum of A[i][j] * X[j] for all j != i
-        s = sum(A[i][j] * X[j] for j in range(n) if j != i)
-        X_next[i] = (b[i] - s) / A[i][i]
+        diagonal_val = abs(matrix[i][i])
+        off_diagonal_sum = sum(abs(matrix[i][j]) for j in range(n) if i != j)
 
-    return X_next
+        if diagonal_val <= off_diagonal_sum:
+            return False
+    return True
 
-
-def gauss_seidel_method(A, b, X):
-    """
-    Computes the next approximation vector (Xr+1) using the Gauss-Seidel method.
-    """
-    n = len(A)
-    # Copy X so we can update it in-place using the newest values
-    X_next = np.copy(X)
-
-    for i in range(n):
-        # Sum of A[i][j] * X_next[j] for all j != i
-        # Notice it uses the newly updated values in X_next immediately
-        s = sum(A[i][j] * X_next[j] for j in range(n) if j != i)
-        X_next[i] = (b[i] - s) / A[i][i]
-
-    return X_next
-
+# =====================================
 
 def iterative_solver(A, b, X0,  method='jacobi'):
     """
@@ -181,35 +176,5 @@ def iterative_solver(A, b, X0,  method='jacobi'):
     print("\nWarning: Maximum iterations (1000) reached without convergence.")
     return Xr
 
-
-
-def findmaxrow(mat,size,col):
-    max=mat[col][col]#starts with the item in diagonal
-    maxrow=col#remember the first row of iteration
-    for row in range(col+1,size):#for each item under diagonal
-        if abs(mat[row][col])>abs(max):#if absolute item under diagonal is bigger then max then update
-            max = mat[row][col]
-            maxrow = row
-    return maxrow
-
-
-def changeroworder(mat, size, row, maxrow):
-    #swaps the items in maxrow to the row currently working with
-
-    for i in range(row , size):
-        temp = mat[i][row]
-        mat[i][row] = mat[maxrow][row]
-        mat[maxrow][row] = temp
-
-
-def diagonally_dominant(matrix):
-    n = len(matrix)
-    for i in range(n):
-        diagonal_val = abs(matrix[i][i])
-        off_diagonal_sum = sum(abs(matrix[i][j]) for j in range(n) if i != j)
-
-        if diagonal_val <= off_diagonal_sum:
-            return False
-    return True
-
+# =====================================
 task()
