@@ -155,9 +155,9 @@ def iterative_solver(A, b, X0,  method='jacobi'):
 
         # Compute the next approximation vector (Xr+1)
         if method == 'jacobi':
-            Xr_next = jacobi_method(A, b, Xr)
+            Xr_next = jacobi(A, b)
         elif method == 'gauss_seidel':
-            Xr_next = gauss_seidel_method(A, b, Xr)
+            Xr_next = gauss_seidel(A, b)
         else:
             raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
 
