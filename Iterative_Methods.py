@@ -1,6 +1,5 @@
-from xml.etree.ElementPath import xpath_tokenizer_re
-
 import numpy as np
+
 TOL = 1e-5
 MAX_ITER = 1000
 
@@ -8,14 +7,15 @@ MAX_ITER = 1000
 MaT =[[60,62,77,76,26],[11,51,1,59,95],[20,44,12,34,97],[3,65,4,13,48],[3,31,83,5,36]]
 Size=5
 b=[1,2,3,4,5]
+epsilon = 0.001
 #Main
 def task():
     pivoting(MaT,Size)#calling for pivoting the matrix
 
     #calling for iteration
     method='jacobi'
-    X0=[1,2,3,4,5]
-    iterative_solver(MaT, b, X0,method )
+    X0=[0]*Size
+    iterative_solver(MaT, b, X0,method)
     method='gauss_seidel'
     iterative_solver( MaT, b, X0, method)
 
@@ -30,7 +30,7 @@ def jacobi(A, b):
     x_new = [0.0] * n
 
     for iteration in range(MAX_ITER):
-
+        min_diff_inner = 1
         for i in range(n):
             sum_not_i = 0.0
 
@@ -38,8 +38,17 @@ def jacobi(A, b):
                 if j != i:
                     sum_not_i += A[i][j] * x_old[j]
 
-            x_new[i] = (b[i][0] - sum_not_i) / A[i][i]
+            x_new[i] = (b[i] - sum_not_i) / A[i][i]
+            diff_inner= 0.0
+            for k in range(n):
+                diff_inner += abs(x_new[k] - x_old[k])
+            if diff_inner < min_diff_inner:
+                min_diff_inner = diff_inner
 
+        if min_diff_inner < epsilon:
+            print(f"\nConvergence achieved after {iteration + 1} iterations.")
+            print(f"Final Solution: X = {x_new}")
+            break
         print("Iteration", iteration + 1, ":", x_new)
 
         # תנאי עצירה
@@ -63,7 +72,8 @@ def jacobi(A, b):
 # Gauss-Seidel Method
 def gauss_seidel(A, b):
     n = len(A)
-
+    sum_before = 0.0
+    sum_after = 0.0
     x = [0.0] * n
 
     for iteration in range(MAX_ITER):
@@ -136,12 +146,12 @@ def diagonally_dominant(matrix):
 
 # =====================================
 
-def iterative_solver(A, b, X0,  method='jacobi'):
+def iterative_solver(A, b, X0,  method):
     """
     Main algorithm loop to find the solution to Ax = b.
     """
     max_iter = 1000
-    epsilon = 1e-6
+
     # Ensure inputs are float arrays to prevent integer division issues
     A = np.array(A, dtype=float)
     b = np.array(b, dtype=float)
@@ -149,29 +159,17 @@ def iterative_solver(A, b, X0,  method='jacobi'):
 
     print(f"--- Starting {method.upper()} Method ---")
 
-    for iteration in range(max_iter):
-        # Print the current vector Xr
-        print(f"Iteration {iteration:3}: Xr = {Xr}")
-
-        # Compute the next approximation vector (Xr+1)
-        if method == 'jacobi':
-            Xr_next = jacobi(A, b)
-        elif method == 'gauss_seidel':
-            Xr_next = gauss_seidel(A, b)
-        else:
-            raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
+    # Compute the next approximation vector (Xr+1)
+    if method == 'jacobi':
+        Xr_next = jacobi(A, b)
+    elif method == 'gauss_seidel':
+        Xr_next = gauss_seidel(A, b)
+    else:
+        raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
 
         # Check stopping condition: |Xr+1 - Xr| < ε
         # Using the infinity norm (maximum absolute difference)
-        diff = np.max(np.abs(Xr_next - Xr))
-
-        if diff < epsilon:
-            print(f"\nConvergence achieved after {iteration + 1} iterations.")
-            print(f"Final Solution: X = {Xr_next}")
-            break
-
-        # Update: Xr to Xr+1
-        Xr = Xr_next
+    diff = np.abs(np.array(Xr_next) - np.array(Xr))
 
     has_dominant = diagonally_dominant(A)
 
@@ -184,7 +182,6 @@ def iterative_solver(A, b, X0,  method='jacobi'):
             print("Matrix is not diagonally dominant, but the system converged.")
 
         print("Solution:", Xr_next)
-        print("Iterations:", iteration + 1)
     else:
         print("The system did not converge after", max_iter, "iterations.")
         print("Last approximation:", Xr)
