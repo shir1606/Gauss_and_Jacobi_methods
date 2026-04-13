@@ -168,13 +168,29 @@ def iterative_solver(A, b, X0,  method='jacobi'):
         if diff < epsilon:
             print(f"\nConvergence achieved after {iteration + 1} iterations.")
             print(f"Final Solution: X = {Xr_next}")
-            return Xr_next
+            break
 
         # Update: Xr to Xr+1
         Xr = Xr_next
 
-    print("\nWarning: Maximum iterations (1000) reached without convergence.")
+    has_dominant = diagonally_dominant(A)
+
+    print("\n--- Final Result ---")
+
+    if diff < epsilon:
+        if has_dominant:
+            print("Matrix is diagonally dominant and the system converged.")
+        else:
+            print("Matrix is not diagonally dominant, but the system converged.")
+
+        print("Solution:", Xr_next)
+        print("Iterations:", iteration + 1)
+    else:
+        print("The system did not converge after", max_iter, "iterations.")
+        print("Last approximation:", Xr)
+
     return Xr
+
 
 # =====================================
 task()
