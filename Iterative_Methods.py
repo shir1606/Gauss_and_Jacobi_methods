@@ -25,41 +25,30 @@ def task():
 # Jacobi Method
 def jacobi(A, b):
     n = len(A)
-
     x_old = [0.0] * n
     x_new = [0.0] * n
 
     for iteration in range(MAX_ITER):
-        min_diff_inner = 1
         for i in range(n):
             sum_not_i = 0.0
-
             for j in range(n):
                 if j != i:
                     sum_not_i += A[i][j] * x_old[j]
 
             x_new[i] = (b[i] - sum_not_i) / A[i][i]
-            diff_inner= 0.0
-            for k in range(n):
-                diff_inner += abs(x_new[k] - x_old[k])
-            if diff_inner < min_diff_inner:
-                min_diff_inner = diff_inner
 
-        if min_diff_inner < epsilon:
-            print(f"\nConvergence achieved after {iteration + 1} iterations.")
-            print(f"Final Solution: X = {x_new}")
-            break
         print("Iteration", iteration + 1, ":", x_new)
 
-        # תנאי עצירה
+        # Check stopping condition: |x_new - x_old| < epsilon
         max_diff = 0.0
         for i in range(n):
             diff = abs(x_new[i] - x_old[i])
             if diff > max_diff:
                 max_diff = diff
 
-        if max_diff < TOL:
-            print("\nConverged after", iteration + 1, "iterations")
+        if max_diff < epsilon:
+            print(f"\nConvergence achieved after {iteration + 1} iterations.")
+            print(f"Final Solution: X = {x_new}")
             return x_new
 
         x_old = x_new.copy()
@@ -81,10 +70,8 @@ def gauss_seidel(A, b):
         x_old = x.copy()
 
         for i in range(n):
-
             for j in range(i):
                 sum_before += A[i][j] * x[j]
-
             for j in range(i + 1, n):
                 sum_after += A[i][j] * x_old[j]
 
