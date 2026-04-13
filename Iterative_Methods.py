@@ -1,59 +1,52 @@
-import numpy as np
-
-TOL = 1e-5
+epsilon = 1e-5
 MAX_ITER = 1000
 
 
-MaT =[[60,62,77,76,26],[11,51,1,59,95],[20,44,12,34,97],[3,65,4,13,48],[3,31,83,5,36]]
-Size=5
+MaT =[[20,  1,  2,  1,  3],[ 2, 25,  3,  2,  1],[ 1,  2, 30,  1,  2],[ 3,  1,  2, 22,  1],[ 2,  3,  1,  2, 28]]
 b=[1,2,3,4,5]
-epsilon = 0.001
+Size=5
 #Main
 def task():
     pivoting(MaT,Size)#calling for pivoting the matrix
 
     #calling for iteration
-    method='jacobi'
-    X0=[0]*Size
-    iterative_solver(MaT, b, X0,method)
-    method='gauss_seidel'
-    iterative_solver( MaT, b, X0, method)
-
+    iterative_solver(MaT, b,'jacobi')
+    iterative_solver( MaT, b, 'gauss_seidel')
 
 # =====================================
 
 # Jacobi Method
 def jacobi(A, b):
-    n = len(A)
-    x_old = [0.0] * n
-    x_new = [0.0] * n
+    x_old = [0.0] * Size
+    x_new = [0.0] * Size
 
     for iteration in range(MAX_ITER):
-        for i in range(n):
-            sum_not_i = 0.0
-            for j in range(n):
+        for i in range(Size):
+            sum = 0.0
+            for j in range(Size):
                 if j != i:
-                    sum_not_i += A[i][j] * x_old[j]
+                    sum += A[i][j] * x_old[j]
 
-            x_new[i] = (b[i] - sum_not_i) / A[i][i]
-
+            x_new[i] = (b[i] - sum) / A[i][i]
         print("Iteration", iteration + 1, ":", x_new)
 
-        # Check stopping condition: |x_new - x_old| < epsilon
-        max_diff = 0.0
-        for i in range(n):
+        # compute max_diff using a loop
+        max_diff = 0
+        for i in range(Size):
             diff = abs(x_new[i] - x_old[i])
             if diff > max_diff:
                 max_diff = diff
-
+        x_new.append(max_diff)
+        # stopping condition
         if max_diff < epsilon:
+            print("Max diff:", max_diff)
             print(f"\nConvergence achieved after {iteration + 1} iterations.")
             print(f"Final Solution: X = {x_new}")
             return x_new
 
-        x_old = x_new.copy()
+        # update old vector
+        x_old= x_new.copy()
 
-    print("\nDid not converge")
     return x_old
 
 # =====================================
@@ -75,7 +68,7 @@ def gauss_seidel(A, b):
             for j in range(i + 1, n):
                 sum_after += A[i][j] * x_old[j]
 
-            x[i] = (b[i][0] - sum_before - sum_after) / A[i][i]
+            x[i] = (b[i] - sum_before - sum_after) / A[i][i]
 
         print("Iteration", iteration + 1, ":", x)
 
@@ -84,12 +77,14 @@ def gauss_seidel(A, b):
             diff = abs(x[i] - x_old[i])
             if diff > max_diff:
                 max_diff = diff
-
-        if max_diff < TOL:
+        x.append(max_diff)
+        if max_diff < epsilon:
             print("\nConverged after", iteration + 1, "iterations")
+
             return x
 
     print("\nDid not converge")
+
     return x
 
 # =====================================
@@ -133,7 +128,14 @@ def diagonally_dominant(matrix):
 
 # =====================================
 
-def iterative_solver(A, b, X0,  method):
+def iterative_solver(A, b, method):
+    """
+    Main algorithm loop to find the solution to Ax = b.
+    """
+    max_iter = 1000
+
+    # Ensure inputs are float arrays to prevent integer division issues
+    print(f"--- Starting {method.upper()} Method ---")
 
     # Compute the next approximation vector (Xr+1)
     if method == 'jacobi':
@@ -142,26 +144,9 @@ def iterative_solver(A, b, X0,  method):
         Xr_next = gauss_seidel(A, b)
     else:
         raise ValueError("Method must be 'jacobi' or 'gauss_seidel'")
-
-    """
-    maybe delete ???
-    
-    Main algorithm loop to find the solution to Ax = b.
-    
-    max_iter = 1000
-
-    # Ensure inputs are float arrays to prevent integer division issues
-    A = np.array(A, dtype=float)
-    b = np.array(b, dtype=float)
-    Xr = np.array(X0, dtype=float)
-
-    print(f"--- Starting {method.upper()} Method ---")
-
-
-
+    diff=Xr_next.pop()
         # Check stopping condition: |Xr+1 - Xr| < ε
         # Using the infinity norm (maximum absolute difference)
-    diff = np.abs(np.array(Xr_next) - np.array(Xr))
 
     has_dominant = diagonally_dominant(A)
 
@@ -176,10 +161,10 @@ def iterative_solver(A, b, X0,  method):
         print("Solution:", Xr_next)
     else:
         print("The system did not converge after", max_iter, "iterations.")
-        print("Last approximation:", Xr)
+        #print("Last approximation:", Xr)
 
-    return Xr
+    #return Xr
 
-"""
+
 # =====================================
 task()
