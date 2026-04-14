@@ -2,16 +2,20 @@ epsilon = 1e-5
 MAX_ITER = 1000
 
 
-MaT =[[20,  1,  2,  1,  3],[ 2, 25,  3,  2,  1],[ 1,  2, 30,  1,  2],[ 3,  1,  2, 22,  1],[ 2,  3,  1,  2, 28]]
-b=[1,2,3,4,5]
-Size=5
+MaT =[[4,2,0],[2,10,4],[0,4,5]]
+b=[2,6,5]
+Size = len(MaT)
 #Main
 def task():
     pivoting(MaT,Size)#calling for pivoting the matrix
-
-    #calling for iteration
-    iterative_solver(MaT, b,'jacobi')
-    iterative_solver( MaT, b, 'gauss_seidel')
+    print("pls enter 1 for jacobi method and 2 for gauss seidel method")
+    choice = 1
+    while choice != "0":
+        choice = input()
+        if choice == '1':
+            iterative_solver(MaT, b,'jacobi')
+        if choice =='2':
+            iterative_solver( MaT, b, 'gauss_seidel')
 
 # =====================================
 
